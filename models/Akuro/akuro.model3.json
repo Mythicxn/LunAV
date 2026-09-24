@@ -1,0 +1,24 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "akuro.moc3",
+		"Textures": [
+			"akuro.4096/texture_00.png",
+			"akuro.4096/texture_01.png"
+		],
+		"Physics": "akuro.physics3.json",
+		"DisplayInfo": "akuro.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		}
+	]
+}

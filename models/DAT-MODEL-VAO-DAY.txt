@@ -1,0 +1,6 @@
+Giai nen model Live2D vao thu muc nay.
+
+Moi model nen nam trong mot thu muc rieng va co file *.model3.json, vi du:
+  models\hiyori\Hiyori.model3.json
+
+App tu quet cac thu muc trong models/ va hien danh sach model trong Cai dat -> Model Live2D.

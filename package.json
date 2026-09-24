@@ -1,0 +1,40 @@
+{
+  "name": "ai-companion",
+  "version": "1.0.0",
+  "description": "AI companion overlay",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win zip"
+  },
+  "dependencies": {
+    "msedge-tts": "^2.0.0",
+    "pixi-live2d-display": "0.4.0",
+    "pixi.js": "6.5.10",
+    "discord.js": "^14.16.3",
+    "@discordjs/voice": "^0.19.2",
+    "libsodium-wrappers": "^0.7.15",
+    "opusscript": "^0.0.8",
+    "prism-media": "^1.3.5",
+    "ffmpeg-static": "^5.2.0"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.mythicxn.lunav",
+    "productName": "LunAV",
+    "artifactName": "LunAV-v${version}-win-x64.${ext}",
+    "win": {
+      "target": [
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
+  }
+}

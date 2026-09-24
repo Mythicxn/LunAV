@@ -1,0 +1,126 @@
+{
+  "_ghiChuChuDong": "Quan sát chủ động khi bạn vẫn ở máy nhưng im lặng: sau bao nhiêu phút không thao tác thì bắt đầu quan sát (chuDongBatDauSauPhut), sau bao nhiêu phút thì coi là đã đi vắng và dừng quan sát (chuDongAwaySauPhut), và khoảng nghỉ tối thiểu/tối đa giữa 2 lần chủ động lên tiếng (chuDongCooldownMinPhut/MaxPhut). Đã giảm từ 5/15/5/7 phút xuống còn 3/9/3/4 phút (giảm theo cùng tỉ lệ ~0.6 lần) - chỉnh lại số nào cũng được nếu muốn khác.",
+  "chuDongBatDauSauPhut": 3,
+  "chuDongAwaySauPhut": 9,
+  "chuDongCooldownMinPhut": 3,
+  "chuDongCooldownMaxPhut": 4,
+  "models": [
+    "gemini-3.8-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.1-flash-lite",
+    "gemini-2.5-flash-lite"
+  ],
+  "soTinNhanGuiKem": 16,
+  "nhoSauMoiBaoNhieuTin": 6,
+  "modelsTTS": [
+    "gemini-3.1-flash-tts-preview",
+    "gemini-2.5-flash-preview-tts"
+  ],
+  "_ghiChuTheoDoi": "Theo dõi màn hình nhẹ (bấm nút 👁): chụp lại màn hình mỗi bao nhiêu giây, và tự tắt sau tối đa bao nhiêu phút phòng khi quên tắt.",
+  "theoDoiKhoangCachGiay": 35,
+  "theoDoiToiDaPhut": 15,
+  "giongNoi": "Leda",
+  "phongCachGiong": "Nói bằng giọng nữ trẻ, cao, ngọt ngào, nhí nhảnh và dễ thương như nhân vật anime, ngữ điệu lên xuống rõ",
+  "doCaoGiong": 1,
+  "proxy": "",
+  "_ghiChuGiongAnh": "Bật/tắt tính năng: chat vẫn hiện tiếng Việt, nhưng đọc thành tiếng bằng giọng nữ tiếng Anh MIỄN PHÍ, KHÔNG GIỚI HẠN (Microsoft Edge Read Aloud), thay vì dùng Gemini TTS hay giới hạn hạn mức thấp.",
+  "dichSangTiengAnhDeDoc": true,
+  "edgeVoice": "en-US-AriaNeural",
+  "edgeRate": "+0%",
+  "edgePitch": "+30Hz",
+  "_ghiChuDiscord": [
+    "Cho phép Hiyori tự vào/ra kênh voice Discord khi bạn nhờ trong lúc chat (ví dụ 'qua voice nói chuyện đi').",
+    "Cần dùng TÀI KHOẢN BOT riêng, không phải tài khoản Discord cá nhân của bạn. Các bước:",
+    "1) Vào https://discord.com/developers/applications -> New Application -> đặt tên tuỳ ý.",
+    "2) Vào tab Bot -> Reset Token -> copy chuỗi token đó dán vào botToken bên dưới (KHÔNG chia sẻ chuỗi này cho ai).",
+    "3) Vào tab OAuth2 > URL Generator -> tick scope 'bot' -> tick quyền 'Connect' và 'Speak' -> mở link tạo ra, mời bot vào server của bạn.",
+    "4) guildId: bật Chế độ nhà phát triển trong Discord (Cài đặt > Nâng cao), chuột phải vào tên server -> Copy Server ID.",
+    "5) userId: chuột phải vào chính tên bạn trong Discord -> Copy User ID.",
+    "Chưa điền đủ 3 mục thì tính năng này tự tắt, không ảnh hưởng gì tới phần còn lại của app."
+  ],
+  "timKiemWeb": true,
+  "discord": {
+    "botToken": "",
+    "guildId": "",
+    "userId": ""
+  },
+  "choPhepThayDoiKichThuoc": false,
+  "cuaSoRong": 360,
+  "cuaSoCao": 620,
+  "live2dModel": "Akuro",
+  "_ghiChuVungCham": [
+    "Vùng chạm/vuốt trên model, vì model Akuro không có HitAreas sẵn nên phải khai báo tay theo tỉ lệ khung hình.",
+    "Mỗi vùng là {x1,y1,x2,y2}: 0,0 = góc trên-trái model, 1,1 = góc dưới-phải model (KHÔNG phải tọa độ màn hình).",
+    "Cách canh: bật app, vào Cài đặt bật 'Hiện toạ độ chạm' (nếu có) hoặc mở Developer Console rồi rê chuột qua model để xem log toạ độ, từ đó chỉnh 4 số cho khớp vùng tóc/vùng nhạy cảm thật.",
+    "soLanVuotDeBoiRoi: vuốt tóc bao nhiêu lần liên tiếp thì chuyển từ vui sang bối rối (ngại).",
+    "giayResetDem: sau bao nhiêu giây KHÔNG chạm nữa thì đếm lại từ đầu.",
+    "dau: vùng đỉnh đầu (xoa đầu), được kiểm tra TRƯỚC vùng toc nên click/vuốt trong ô này sẽ tính là xoa đầu (thuần vui, không đi vào hướng bối rối như vuốt tóc). Vùng này nằm lồng bên trong vùng toc phía trên, chỉnh nhỏ/vừa đỉnh đầu là được, không cần bỏ bớt toc.",
+    "nhayCam / chan: đã canh lại theo log toạ độ chuột thật trên model Akuro (xem Developer Console > Coordinate Tracking) - nhayCam là vùng ngực, chan là từ đầu gối trở xuống."
+  ],
+  "vungChamModel": {
+    "dau": [
+      {
+        "x1": 0.32,
+        "y1": 0,
+        "x2": 0.68,
+        "y2": 0.16
+      }
+    ],
+    "toc": [
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 1,
+        "y2": 0.3
+      },
+      {
+        "x1": 0,
+        "y1": 0,
+        "x2": 0.16,
+        "y2": 0.9
+      },
+      {
+        "x1": 0.84,
+        "y1": 0,
+        "x2": 1,
+        "y2": 0.9
+      }
+    ],
+    "nhayCam": [
+      {
+        "x1": 0.44,
+        "y1": 0.38,
+        "x2": 0.57,
+        "y2": 0.49
+      }
+    ],
+    "chan": [
+      {
+        "x1": 0.2,
+        "y1": 0.72,
+        "x2": 0.62,
+        "y2": 1
+      }
+    ],
+    "soLanVuotDeBoiRoi": 5,
+    "giayResetDem": 4,
+    "tay": [
+      {
+        "x1": 0.335,
+        "y1": 0.485,
+        "x2": 0.415,
+        "y2": 0.605
+      },
+      {
+        "x1": 0.425,
+        "y1": 0.475,
+        "x2": 0.505,
+        "y2": 0.595
+      }
+    ],
+    "_ghiChuTay": [
+      "Hai vùng tay được canh quanh 2 điểm debug gần nhất: (0.376, 0.543) và (0.463, 0.533).",
+      "Vùng tay nhỏ, ưu tiên trước vùng nhạy cảm; click/vuốt vào tay sẽ kích hoạt phản ứng vui vẻ."
+    ]
+  }
+}

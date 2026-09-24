@@ -1,0 +1,721 @@
+{
+  "_ghiChu": [
+    "Số liệu ở đây được lấy từ chính model Hiyori: khoảng giá trị đọc từ file .moc3 và nét mặt gốc do họa sĩ vẽ trong các file chuyển động (m04 = bối rối, m07 = ngạc nhiên, m09 = giận, m10 = buồn).",
+    "trungTinh = khuôn mặt bình thường. Các tham số trong trungTinh LUÔN được ghi đè, nên các chuyển động chờ của model không còn tự làm mặt cười/giận/buồn ngẫu nhiên nữa.",
+    "Mỗi cảm xúc gồm: set = nét mặt đích (thay hẳn giá trị, ở cường độ 2 là 75% nét gốc, cường độ 3 là 100%), mul = nhân (dùng cho độ mở mắt để chớp mắt vẫn hoạt động), add = cộng thêm (nghiêng đầu, liếc mắt...), giong = chỉnh độ cao (Hz) và tốc độ (%) giọng đọc, cuChi = thỉnh thoảng làm một chuyển động của họa sĩ (nhom = tên nhóm trong Hiyori.model3.json, xacSuat = khả năng xảy ra, mucToiThieu = cường độ tối thiểu).",
+    "ParamMouthForm của Hiyori chạy từ -2 (miệng méo) đến 1 (miệng khép mỉm cười), mặc định là 1. Lông mày: BrowAngle dương = buồn, âm = giận.",
+    "Cách chỉnh: sửa file này, lưu lại, vào Cài đặt bấm Tải lại bieu-cam.json rồi bấm thử từng nút. Không cần tắt app.",
+    "binh_thuong (bình thường) của Hiyori là một nụ cười rất nhẹ (mắt cười 0.2, má hồng 0.08). Muốn mặt hoàn toàn trơ, xoá dòng \"set\" trong binh_thuong."
+  ],
+  "trungTinh": {
+    "set": {
+      "ParamCheek": 0,
+      "ParamEyeLSmile": 0,
+      "ParamEyeRSmile": 0,
+      "ParamBrowLY": 0,
+      "ParamBrowRY": 0,
+      "ParamBrowLX": 0,
+      "ParamBrowRX": 0,
+      "ParamBrowLAngle": 0,
+      "ParamBrowRAngle": 0,
+      "ParamBrowLForm": 0,
+      "ParamBrowRForm": 0,
+      "ParamMouthForm": 1
+    }
+  },
+  "emotions": {
+    "binh_thuong": {
+      "giong": {
+        "pitchHz": 0,
+        "ratePct": 0
+      },
+      "set": {
+        "ParamEyeLSmile": 0.2,
+        "ParamEyeRSmile": 0.2,
+        "ParamCheek": 0.08
+      }
+    },
+    "vui": {
+      "set": {
+        "ParamEyeLSmile": 0.65,
+        "ParamEyeRSmile": 0.65,
+        "ParamCheek": 0.5,
+        "ParamBrowLY": 0.3,
+        "ParamBrowRY": 0.3
+      },
+      "add": {
+        "ParamAngleZ": 3
+      },
+      "giong": {
+        "pitchHz": 8,
+        "ratePct": 3
+      },
+      "cuChi": {
+        "nhom": "Vui",
+        "xacSuat": 0.3,
+        "mucToiThieu": 2
+      }
+    },
+    "hao_hung": {
+      "set": {
+        "ParamEyeLSmile": 0.9,
+        "ParamEyeRSmile": 0.9,
+        "ParamCheek": 0.35,
+        "ParamBrowLY": 0.4,
+        "ParamBrowRY": 0.4
+      },
+      "mul": {
+        "ParamEyeLOpen": 0.6,
+        "ParamEyeROpen": 0.6
+      },
+      "add": {
+        "ParamMouthOpenY": 0.2,
+        "ParamAngleY": 5
+      },
+      "giong": {
+        "pitchHz": 15,
+        "ratePct": 8
+      },
+      "cuChi": {
+        "nhom": "CuoiVui",
+        "xacSuat": 0.5,
+        "mucToiThieu": 2
+      }
+    },
+    "tinh_nghich": {
+      "set": {
+        "ParamEyeLSmile": 0.8,
+        "ParamEyeRSmile": 0.1,
+        "ParamBrowLY": 0.5,
+        "ParamBrowRY": -0.1,
+        "ParamBrowLAngle": -0.3,
+        "ParamCheek": 0.15
+      },
+      "add": {
+        "ParamAngleZ": -6,
+        "ParamAngleX": 6
+      },
+      "giong": {
+        "pitchHz": 8,
+        "ratePct": 2
+      }
+    },
+    "ngai": {
+      "set": {
+        "ParamCheek": 0.75,
+        "ParamBrowLY": 0.75,
+        "ParamBrowRY": 0.75,
+        "ParamBrowLForm": -0.75,
+        "ParamBrowRForm": -0.75,
+        "ParamMouthForm": -1.25
+      },
+      "add": {
+        "ParamAngleY": -6,
+        "ParamAngleZ": 6,
+        "ParamEyeBallY": -0.4
+      },
+      "giong": {
+        "pitchHz": 10,
+        "ratePct": -6
+      },
+      "cuChi": {
+        "nhom": "TapBody",
+        "xacSuat": 0.7,
+        "mucToiThieu": 2
+      }
+    },
+    "ngac_nhien": {
+      "set": {
+        "ParamBrowLY": 0.195,
+        "ParamBrowRY": 0.27,
+        "ParamBrowRX": 0.203,
+        "ParamBrowLAngle": 0.195,
+        "ParamBrowRAngle": -0.022,
+        "ParamBrowLForm": 0.247,
+        "ParamBrowRForm": 0.158,
+        "ParamMouthForm": -1.25
+      },
+      "mul": {
+        "ParamEyeLOpen": 1.2,
+        "ParamEyeROpen": 1.2
+      },
+      "add": {
+        "ParamMouthOpenY": 0.3,
+        "ParamAngleZ": 4
+      },
+      "giong": {
+        "pitchHz": 14,
+        "ratePct": 8
+      },
+      "cuChi": {
+        "nhom": "NgacNhien",
+        "xacSuat": 0.8,
+        "mucToiThieu": 2
+      }
+    },
+    "buon": {
+      "set": {
+        "ParamBrowLY": 0.143,
+        "ParamBrowRY": 0.083,
+        "ParamBrowLX": -0.36,
+        "ParamBrowRX": 0.217,
+        "ParamBrowLAngle": 0.75,
+        "ParamBrowRAngle": 0.637,
+        "ParamBrowLForm": -0.562,
+        "ParamBrowRForm": -0.652,
+        "ParamMouthForm": -0.5
+      },
+      "mul": {
+        "ParamEyeLOpen": 0.8,
+        "ParamEyeROpen": 0.8
+      },
+      "add": {
+        "ParamAngleY": -8,
+        "ParamEyeBallY": -0.5
+      },
+      "giong": {
+        "pitchHz": -12,
+        "ratePct": -12
+      },
+      "cuChi": {
+        "nhom": "Buon",
+        "xacSuat": 0.7,
+        "mucToiThieu": 2
+      }
+    },
+    "lo_lang": {
+      "set": {
+        "ParamBrowLY": 0.35,
+        "ParamBrowRY": 0.35,
+        "ParamBrowLAngle": 0.8,
+        "ParamBrowRAngle": 0.8,
+        "ParamBrowLForm": -0.5,
+        "ParamBrowRForm": -0.5,
+        "ParamMouthForm": 0
+      },
+      "mul": {
+        "ParamEyeLOpen": 0.95,
+        "ParamEyeROpen": 0.95
+      },
+      "add": {
+        "ParamAngleZ": -5,
+        "ParamAngleY": -3
+      },
+      "giong": {
+        "pitchHz": 0,
+        "ratePct": 3
+      }
+    },
+    "kho_chiu": {
+      "set": {
+        "ParamBrowLY": -0.35,
+        "ParamBrowRY": -0.35,
+        "ParamBrowLAngle": -0.55,
+        "ParamBrowRAngle": -0.55,
+        "ParamBrowLForm": -0.5,
+        "ParamBrowRForm": -0.5,
+        "ParamMouthForm": -0.6
+      },
+      "mul": {
+        "ParamEyeLOpen": 0.78,
+        "ParamEyeROpen": 0.78
+      },
+      "add": {
+        "ParamAngleX": 12,
+        "ParamEyeBallX": -0.5,
+        "ParamAngleY": -3
+      },
+      "giong": {
+        "pitchHz": -8,
+        "ratePct": 0
+      }
+    },
+    "gian": {
+      "set": {
+        "ParamCheek": 0.75,
+        "ParamBrowLY": -0.315,
+        "ParamBrowRY": -0.75,
+        "ParamBrowLAngle": -0.75,
+        "ParamBrowRAngle": -0.75,
+        "ParamBrowLForm": -0.75,
+        "ParamBrowRForm": -0.75,
+        "ParamMouthForm": -1.25
+      },
+      "mul": {
+        "ParamEyeLOpen": 0.85,
+        "ParamEyeROpen": 0.85
+      },
+      "add": {
+        "ParamAngleY": -5
+      },
+      "giong": {
+        "pitchHz": -6,
+        "ratePct": 10
+      },
+      "cuChi": {
+        "nhom": "Gian",
+        "xacSuat": 0.9,
+        "mucToiThieu": 2
+      }
+    },
+    "suy_nghi": {
+      "set": {
+        "ParamBrowLY": 0.3,
+        "ParamBrowRY": 0.15,
+        "ParamMouthForm": 0.3
+      },
+      "add": {
+        "ParamEyeBallX": 0.5,
+        "ParamEyeBallY": 0.5,
+        "ParamAngleZ": 6,
+        "ParamAngleX": -6
+      }
+    },
+    "cham_squint": {},
+    "cham_shy": {},
+    "cham_omouth": {},
+    "cham_smallpupils": {},
+    "cham_dark": {}
+  },
+  "cauNoiCham": {
+    "_ghiChu": "Câu nói ngắn khi người dùng chạm/vuốt model. Mỗi câu là {vi, en}: 'vi' hiện trong bong bóng, 'en' mới là câu ĐƯỢC ĐỌC THÀNH TIẾNG (âm thanh luôn là tiếng Anh, giống hệt quy tắc của câu trả lời chat). Mỗi lần chạm chọn ngẫu nhiên 1 cặp trong đúng mảng, tự tránh lặp lại đúng câu vừa nói. dau.1/2/3 = xoa đỉnh đầu mức nhẹ/vừa/nhiều (khớp cảm xúc vui mức 2/vui mức 3/hào hứng - thuần vui, KHÔNG đi vào hướng bối rối). toc.1/2/3 = vuốt tóc mức nhẹ/vừa/nhiều (khớp cham_squint/cham_shy/cham_omouth). nhayCam.1/2/3/4/5 = chạm vùng nhạy cảm, leo thang cảm xúc: 1 lần đầu (giật mình - cham_smallpupils, chỉ 1 lần/phiên) -> 2 vài lần (buồn - buon) -> 3 nhiều lần hơn (khó chịu/không vui - kho_chiu) -> 4 nhiều lần nữa (tức giận - gian) -> 5 chạm quá nhiều (mặt tối, cảnh báo cứng rắn nhất - cham_dark). chan = chạm vùng chân. tay = chạm trực tiếp vào hai vùng tay, phản ứng vui vẻ.",
+    "dau": {
+      "1": [
+        {
+          "vi": "Hihi, xoa đầu dễ chịu ghê~",
+          "en": "Hehe, having my head patted feels so nice~"
+        },
+        {
+          "vi": "Ưm, được rồi đấy, xoa nữa đi~",
+          "en": "Mmm, that's it, pat me some more~"
+        },
+        {
+          "vi": "Ơ, ai xoa đầu mình vậy, thích ghê~",
+          "en": "Ooh, who's patting my head, I love it~"
+        }
+      ],
+      "2": [
+        {
+          "vi": "Hihi, vui muốn bay lên luôn á~",
+          "en": "Hehe, I'm so happy I could float away~"
+        },
+        {
+          "vi": "Mặt mình nóng bừng lên vì vui nè~",
+          "en": "My face is glowing warm, I'm just that happy~"
+        },
+        {
+          "vi": "Xoa hoài vầy chắc mình cười cả ngày mất~",
+          "en": "Keep patting like that and I'll be smiling all day~"
+        }
+      ],
+      "3": [
+        {
+          "vi": "Yeah! Vui quá đi, cảm ơn bạn nhiều lắm~",
+          "en": "Yay! I'm so happy, thank you so much~"
+        },
+        {
+          "vi": "Hehe, tim mình đập rộn ràng vì vui nè~",
+          "en": "Hehe, my heart's racing, I'm just so happy~"
+        },
+        {
+          "vi": "Đây chắc là ngày vui nhất của mình luôn~",
+          "en": "This might just be the happiest day ever~"
+        }
+      ]
+    },
+    "toc": {
+      "1": [
+        {
+          "vi": "Ưm... dễ chịu ghê~",
+          "en": "Mmm... that feels nice~"
+        },
+        {
+          "vi": "Hihi, được xoa đầu thích thế",
+          "en": "Hehe, I love having my head patted"
+        },
+        {
+          "vi": "Ừm ừm, được rồi đấy~",
+          "en": "Mm-hm, that's nice~"
+        },
+        {
+          "vi": "Ngoan ghê, xoa nhẹ nhàng vầy nè",
+          "en": "Aw, so gentle, I like it"
+        }
+      ],
+      "2": [
+        {
+          "vi": "Thôi mà, ngại quá à~",
+          "en": "Come on, that's embarrassing~"
+        },
+        {
+          "vi": "Ơ kìa, vuốt hoài vậy đó",
+          "en": "Hey, you keep petting me"
+        },
+        {
+          "vi": "Á, đủ rồi á, mặt đỏ hết rồi nè",
+          "en": "Ah, that's enough, my face is turning red"
+        },
+        {
+          "vi": "Trời, nhiều lần vậy làm mình ngại ghê",
+          "en": "Gosh, that many times is making me shy"
+        }
+      ],
+      "3": [
+        {
+          "vi": "Thôi thôi, để lúc khác đi mà~",
+          "en": "Okay okay, maybe later~"
+        },
+        {
+          "vi": "Xoa nhiều vậy chóng mặt mất à nha",
+          "en": "That much patting is making me dizzy"
+        },
+        {
+          "vi": "Được rồi được rồi, mình xin hàng~",
+          "en": "Alright alright, I give up~"
+        },
+        {
+          "vi": "Ngại quá đi, dừng lại chút được không~",
+          "en": "I'm so embarrassed, can you stop for a bit~"
+        }
+      ]
+    },
+    "nhayCam": {
+      "1": [
+        {
+          "vi": "Ơ! Chỗ đó không được đâu nha!",
+          "en": "Hey! Not there, okay!"
+        },
+        {
+          "vi": "Ơ ơ, khoan đã, đừng chạm chỗ đó chứ!",
+          "en": "Whoa, wait, don't touch there!"
+        },
+        {
+          "vi": "Ấy, giật cả mình, đừng đụng vào đó nha~",
+          "en": "Eek, you startled me, please don't touch there~"
+        }
+      ],
+      "2": [
+        {
+          "vi": "Ơ... bạn chạm vào đó làm mình buồn thật đó.",
+          "en": "Oh... touching me there actually makes me sad."
+        },
+        {
+          "vi": "Hức, mình không thích vậy đâu, buồn ghê á.",
+          "en": "Aw, I don't like that, it makes me kind of sad."
+        },
+        {
+          "vi": "Đừng làm vậy nữa mà, mình buồn thật rồi đó.",
+          "en": "Please don't do that again, I'm genuinely sad now."
+        }
+      ],
+      "3": [
+        {
+          "vi": "Mình nói rồi mà, đừng chạm chỗ đó nữa, mình không vui đâu.",
+          "en": "I already told you, don't touch there again, I'm not happy about it."
+        },
+        {
+          "vi": "Thiệt tình, sao cứ chạm hoài vậy, mình khó chịu lắm rồi.",
+          "en": "Seriously, why do you keep touching there, I'm getting annoyed."
+        },
+        {
+          "vi": "Đủ rồi đó nha, mình khó chịu thật sự rồi đấy.",
+          "en": "That's enough, I'm genuinely getting uncomfortable now."
+        }
+      ],
+      "4": [
+        {
+          "vi": "Đủ rồi đấy! Mình giận thật rồi, dừng lại ngay đi!",
+          "en": "That's enough! I'm really angry now, stop it right now!"
+        },
+        {
+          "vi": "Mình nói nghiêm túc đó: DỪNG LẠI. Mình đang giận đấy.",
+          "en": "I'm serious: STOP. I'm angry right now."
+        },
+        {
+          "vi": "Chạm thêm lần nữa là mình giận luôn cho coi!",
+          "en": "Touch there one more time and I will actually get mad!"
+        }
+      ],
+      "5": [
+        {
+          "vi": "...Được rồi đó. Đừng thử thách mình thêm nữa.",
+          "en": "...Okay then. Don't push your luck any further."
+        },
+        {
+          "vi": "Mình đã cảnh báo đủ rồi đấy. Dừng lại, ngay bây giờ.",
+          "en": "I've warned you enough already. Stop, right now."
+        },
+        {
+          "vi": "Đây là lần cuối mình nhắc nhở đó, liệu hồn.",
+          "en": "This is the last time I'm warning you, be careful."
+        }
+      ]
+    },
+    "chan": [
+      {
+        "vi": "Á, nhột chân quá!",
+        "en": "Ah, that tickles my feet!"
+      },
+      {
+        "vi": "Hihi, đừng chạm chân mình nhột lắm",
+        "en": "Hehe, don't touch my feet, it tickles"
+      },
+      {
+        "vi": "Ơ, nhột ghê, đừng chọc chân mình mà~",
+        "en": "Ooh, so ticklish, don't poke my feet~"
+      }
+    ],
+    "tay": [
+      {
+        "vi": "Hihi, chạm tay mình nè~",
+        "en": "Hehe, you touched my hand~"
+      },
+      {
+        "vi": "Aww, chạm tay nhẹ thôi nha~",
+        "en": "Aww, just a gentle touch~"
+      },
+      {
+        "vi": "Hihi, mình vui đó~",
+        "en": "Hehe, that makes me happy~"
+      },
+      {
+        "vi": "Ồ, bạn đang nắm tay mình à~",
+        "en": "Oh, are you holding my hand~"
+      }
+    ]
+  },
+  "_modelProfiles": {
+    "Akuro": {
+      "neutral": {
+        "EyeNormalButton": 0,
+        "EyeNormalButton2": 0,
+        "MouthNormalButton": 0,
+        "RedButton": 0,
+        "RedButton2": 0,
+        "RedButton3": 0,
+        "CryButton3": 0,
+        "CryButton4": 0,
+        "eyesmallerButton": 0,
+        "lightabButton2": 0,
+        "BlackButton": 0,
+        "CryButton": 0,
+        "AngryButton": 0,
+        "AngryButton2": 0,
+        "aixiButton3": 0,
+        "StarButton": 0,
+        "LoveButton": 0,
+        "EXPButton": 0,
+        "EXPButton2": 0,
+        "EXPButton3": 0
+      },
+      "idle": {
+        "breathId": "ParamBreath",
+        "breathAmplitude": 0.1,
+        "breathSpeed": 0.12
+      },
+      "emotions": {
+        "binh_thuong": {
+          "set": {}
+        },
+        "vui": {
+          "set": {
+            "RedButton": 0.8,
+            "aixiButton3": 0.15
+          }
+        },
+        "hao_hung": {
+          "set": {
+            "StarButton": 1,
+            "RedButton": 0.25
+          }
+        },
+        "tinh_nghich": {
+          "set": {
+            "aixiButton3": 1,
+            "RedButton3": 0.35
+          }
+        },
+        "ngai": {
+          "set": {
+            "RedButton": 1,
+            "RedButton3": 1,
+            "CryButton3": 0.15
+          }
+        },
+        "ngac_nhien": {
+          "set": {
+            "EXPButton3": 1,
+            "RedButton2": 0.8,
+            "EyeNormalButton": 0
+          }
+        },
+        "buon": {
+          "set": {
+            "CryButton": 1,
+            "RedButton3": 0.35
+          }
+        },
+        "lo_lang": {
+          "set": {
+            "eyesmallerButton": 0.75,
+            "EXPButton": 0.55
+          }
+        },
+        "kho_chiu": {
+          "set": {
+            "eyesmallerButton": 1,
+            "RedButton3": 1
+          }
+        },
+        "gian": {
+          "set": {
+            "AngryButton": 1,
+            "AngryButton2": 1,
+            "RedButton3": 1
+          }
+        },
+        "suy_nghi": {
+          "set": {
+            "eyesmallerButton": 0.35,
+            "EXPButton2": 0.65
+          }
+        },
+        "_ghiChuChamTay": "5 mục dưới đây lấy đúng số từ các file exp3.json gốc (squint-face, shy-face, o-mouth, small-pupils, dark-face), dùng riêng cho tương tác chạm/vuốt trên model, không liên quan tới bộ cảm xúc voice/chat ở trên.",
+        "cham_squint": {
+          "set": {
+            "EyeNormalButton": -1,
+            "EyeNormalButton2": -1,
+            "MouthNormalButton": -1,
+            "RedButton2": 0,
+            "RedButton3": 0,
+            "CryButton3": 1,
+            "CryButton4": 0
+          }
+        },
+        "cham_shy": {
+          "set": {
+            "MouthNormalButton": -1,
+            "RedButton": 1,
+            "RedButton2": 0,
+            "RedButton3": 1,
+            "CryButton3": 0,
+            "CryButton4": 0,
+            "EyeNormalButton": 0,
+            "EyeNormalButton2": 0
+          }
+        },
+        "cham_omouth": {
+          "set": {
+            "MouthNormalButton": -1,
+            "RedButton2": 1,
+            "RedButton3": 0,
+            "CryButton3": 0,
+            "CryButton4": 0,
+            "EyeNormalButton": 0,
+            "EyeNormalButton2": 0
+          }
+        },
+        "cham_smallpupils": {
+          "set": {
+            "eyesmallerButton": 1
+          }
+        },
+        "cham_dark": {
+          "set": {
+            "lightabButton2": -1,
+            "BlackButton": 1
+          }
+        }
+      }
+    },
+    "Akuro-Dress": {
+      "neutral": {
+        "EyeNormalButton": 0,
+        "EyeNormalButton2": 0,
+        "MouthNormalButton": 0,
+        "RedButton": 0,
+        "RedButton2": 0,
+        "RedButton3": 0,
+        "CryButton3": 0,
+        "CryButton4": 0,
+        "eyesmallerButton": 0,
+        "lightabButton2": 0,
+        "BlackButton": 0,
+        "CryButton": 0,
+        "AngryButton": 0,
+        "Param12": 0,
+        "Param13": 0,
+        "Param14": 0
+      },
+      "idle": {
+        "breathId": "ParamBreath",
+        "breathAmplitude": 0.1,
+        "breathSpeed": 0.12
+      },
+      "emotions": {
+        "binh_thuong": {
+          "set": {}
+        },
+        "vui": {
+          "set": {
+            "RedButton": 0.8
+          }
+        },
+        "hao_hung": {
+          "set": {
+            "Param12": 0.15,
+            "RedButton": 0.25
+          }
+        },
+        "tinh_nghich": {
+          "set": {
+            "RedButton3": 0.35,
+            "eyesmallerButton": 0.25
+          }
+        },
+        "ngai": {
+          "set": {
+            "RedButton": 1,
+            "RedButton3": 1
+          }
+        },
+        "ngac_nhien": {
+          "set": {
+            "Param12": 1,
+            "RedButton2": 0.8
+          }
+        },
+        "buon": {
+          "set": {
+            "CryButton": 1,
+            "RedButton3": 0.35
+          }
+        },
+        "lo_lang": {
+          "set": {
+            "Param13": 1,
+            "eyesmallerButton": 0.6
+          }
+        },
+        "kho_chiu": {
+          "set": {
+            "AngryButton": 0.5,
+            "RedButton3": 1
+          }
+        },
+        "gian": {
+          "set": {
+            "AngryButton": 1,
+            "RedButton3": 1
+          }
+        },
+        "suy_nghi": {
+          "set": {
+            "eyesmallerButton": 0.35,
+            "Param13": 0.35
+          }
+        }
+      }
+    }
+  }
+}

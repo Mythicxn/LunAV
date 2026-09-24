@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Hiyori Developer Console</title>
+  <style>
+    :root { color-scheme: dark; }
+    html, body { margin: 0; width: 100%; height: 100%; background: #0b0c11; color: #d8dce5; font-family: Consolas, 'Cascadia Mono', monospace; overflow: hidden; }
+    * { box-sizing: border-box; }
+    #app { display: flex; flex-direction: column; width: 100%; height: 100%; }
+    #head { height: 46px; flex: 0 0 46px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; background: #15171e; border-bottom: 1px solid #2b2f3a; }
+    #title { font-family: 'Segoe UI', Arial, sans-serif; font-weight: 700; font-size: 14px; }
+    #badge { margin-left: 8px; padding: 3px 7px; border-radius: 6px; background: #263244; color: #9ac7ff; font: 700 10px 'Segoe UI', Arial, sans-serif; letter-spacing: .7px; }
+    #tools { display: flex; gap: 6px; }
+    button { border: 1px solid #353b48; background: #20232c; color: #cdd2dc; border-radius: 7px; padding: 5px 9px; cursor: pointer; font: 12px 'Segoe UI', Arial, sans-serif; }
+    button:hover { background: #2b303b; color: #fff; }
+    #meta { flex: 0 0 auto; min-height: 28px; padding: 6px 10px; background: #101218; color: #7f8797; font-size: 11px; border-bottom: 1px solid #20242d; }
+    #body { display: flex; flex: 1 1 auto; min-height: 0; }
+    #logs { flex: 1 1 auto; min-width: 0; min-height: 0; overflow-y: auto; padding: 9px; }
+    .line { display: grid; grid-template-columns: 72px 62px minmax(0,1fr); gap: 8px; padding: 5px 8px; margin-bottom: 3px; border-left: 2px solid #303643; background: rgba(255,255,255,.018); white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.4; font-size: 12px; }
+    .time { color: #606878; }
+    .level { color: #96a0b4; font-weight: 700; }
+    .text { color: #d8dce5; }
+    .line.search { border-left-color: #4cae9b; background: rgba(59,151,132,.07); }
+    .line.search .level { color: #74d2bd; }
+    .line.error, .line.warn { border-left-color: #e46e6e; background: rgba(155,40,40,.10); }
+    .line.error .level { color: #ff8f8f; }
+    .line.warn .level { color: #ffc37e; }
+    .line.chat { border-left-color: #6d8fe6; }
+    .line.tts { border-left-color: #c783bd; }
+    .line.screen, .line.watch { border-left-color: #7ea7c9; }
+    .line.touch { border-left-color: #8fcf91; }
+    .line.touch-debug { border-left-color: #8a91a7; opacity: .82; }
+    #empty { color: #677082; text-align: center; padding: 30px 10px; font-size: 12px; }
+
+    #side { flex: 0 0 280px; width: 280px; min-width: 280px; border-left: 1px solid #2b2f3a; background: #101218; overflow-y: auto; }
+    .panel { padding: 14px; border-bottom: 1px solid #252a34; }
+    .panel-title { color: #aeb6c5; font: 700 11px 'Segoe UI', Arial, sans-serif; letter-spacing: .8px; text-transform: uppercase; }
+    .storage-total { margin-top: 8px; font: 700 16px 'Segoe UI', Arial, sans-serif; color: #eef1f6; }
+    .storage-sub { margin-top: 3px; color: #6f7788; font-size: 10px; }
+    #storage-bar { display: flex; width: 100%; height: 13px; margin-top: 13px; border-radius: 5px; overflow: hidden; background: #222630; border: 1px solid #303542; }
+    .seg { height: 100%; min-width: 0; transition: width .35s ease; }
+    .seg.models { background: #76b7ff; }
+    .seg.runtime { background: #9c8cff; }
+    .seg.other { background: #5f687a; }
+    #storage-legend { display: grid; gap: 7px; margin-top: 13px; }
+    .storage-row { display: grid; grid-template-columns: 10px 1fr auto; gap: 8px; align-items: center; font-size: 10px; }
+    .dot { width: 8px; height: 8px; border-radius: 2px; }
+    .dot.models { background: #76b7ff; }
+    .dot.runtime { background: #9c8cff; }
+    .dot.other { background: #5f687a; }
+    .storage-name { color: #aeb6c5; }
+    .storage-size { color: #dce1e9; font-variant-numeric: tabular-nums; }
+    #storage-updated { margin-top: 12px; color: #606878; font-size: 9px; }
+    .storage-error { color: #ff8f8f; font-size: 10px; margin-top: 9px; line-height: 1.4; }
+
+    .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 11px; }
+    .setting-name { color: #d9dde6; font: 600 11px 'Segoe UI', Arial, sans-serif; }
+    .setting-desc { margin-top: 4px; color: #697284; font-size: 9px; line-height: 1.45; }
+    .switch { position: relative; display: inline-flex; flex: 0 0 auto; width: 38px; height: 21px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; inset: 0; border-radius: 12px; background: #2a2e38; border: 1px solid #3a404c; cursor: pointer; transition: .18s; }
+    .slider::before { content: ''; position: absolute; width: 15px; height: 15px; left: 2px; top: 2px; border-radius: 50%; background: #8a91a0; transition: .18s; }
+    .switch input:checked + .slider { background: #315f55; border-color: #4f8f7e; }
+    .switch input:checked + .slider::before { transform: translateX(17px); background: #a4e2cf; }
+    #tracking-status { margin-top: 8px; color: #8b94a5; font-size: 10px; }
+    #tracking-status.on { color: #8fd3bd; }
+    #tracking-status.off { color: #7d8492; }
+
+    .field-label { margin-top: 11px; color: #aeb6c5; font: 600 10px 'Segoe UI', Arial, sans-serif; }
+    .field-row { margin-top: 6px; }
+    .field-row input { width: 100%; padding: 7px 9px; border-radius: 6px; border: 1px solid #353b48; background: #1a1d25; color: #e2e6ee; font: 11px Consolas, 'Cascadia Mono', monospace; }
+    .field-row input:focus { outline: none; border-color: #5a6478; }
+    .field-actions { display: flex; gap: 6px; margin-top: 8px; }
+    .field-actions button { flex: 1 1 auto; }
+    .field-status { margin-top: 8px; color: #8b94a5; font-size: 10px; line-height: 1.4; }
+    .field-status.on { color: #8fd3bd; }
+    .field-status.off { color: #ffc37e; }
+    .field-note { margin-top: 10px; color: #697284; font-size: 9px; line-height: 1.5; }
+    .field-note code { background: #1a1d25; border: 1px solid #2b303b; border-radius: 4px; padding: 1px 4px; color: #9ac7ff; }
+
+    @media (max-width: 760px) {
+      #side { flex-basis: 245px; width: 245px; min-width: 245px; }
+    }
+    @media (max-width: 660px) {
+      #side { flex-basis: 220px; width: 220px; min-width: 220px; }
+      .line { grid-template-columns: 64px 52px minmax(0,1fr); gap: 5px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="head">
+      <div id="title">Hiyori Developer Console <span id="badge">DEBUG</span></div>
+      <div id="tools"><button id="copy">Copy</button><button id="clear">Clear</button></div>
+    </div>
+    <div id="meta">Đây là log kỹ thuật của Hiyori. Nội dung ở đây KHÔNG được đưa vào lịch sử hội thoại gửi cho Gemini.</div>
+    <div id="body">
+      <div id="logs"><div id="empty">Chưa có log.</div></div>
+      <aside id="side">
+        <section class="panel">
+          <div class="panel-title">Program Storage</div>
+          <div id="storage-total" class="storage-total">Đang quét…</div>
+          <div id="storage-sub" class="storage-sub">Dung lượng toàn bộ thư mục chương trình</div>
+          <div id="storage-bar" aria-label="Program storage"><div id="seg-models" class="seg models" style="width:0"></div><div id="seg-runtime" class="seg runtime" style="width:0"></div><div id="seg-other" class="seg other" style="width:0"></div></div>
+          <div id="storage-legend"></div>
+          <div id="storage-updated">Chưa cập nhật</div>
+          <div id="storage-error" class="storage-error" hidden></div>
+        </section>
+        <section class="panel">
+          <div class="panel-title">Debug Settings</div>
+          <div class="setting-row">
+            <div>
+              <div class="setting-name">Coordinate Tracking</div>
+              <div class="setting-desc">Hiện tọa độ chuột trên model trong Developer Console để canh hitbox.</div>
+            </div>
+            <label class="switch" title="Bật/tắt Coordinate Tracking">
+              <input id="coordinate-toggle" type="checkbox">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div id="tracking-status">Đang đọc trạng thái…</div>
+        </section>
+        <section class="panel">
+          <div class="panel-title">Gemini API Key</div>
+          <div class="field-row"><input id="gemini-key-input" type="password" placeholder="Dán Gemini API key…" autocomplete="off" spellcheck="false"></div>
+          <div class="field-actions">
+            <button id="gemini-key-save">Lưu</button>
+            <button id="gemini-key-delete">Xoá</button>
+          </div>
+          <div id="gemini-key-status" class="field-status">Đang tải…</div>
+        </section>
+        <section class="panel">
+          <div class="panel-title">Discord (voice)</div>
+          <div class="field-label">Server ID (guildId)</div>
+          <div class="field-row"><input id="discord-guild-input" type="text" placeholder="VD: 123456789012345678" autocomplete="off" spellcheck="false"></div>
+          <div class="field-label">User ID (userId)</div>
+          <div class="field-row"><input id="discord-user-input" type="text" placeholder="VD: 123456789012345678" autocomplete="off" spellcheck="false"></div>
+          <div class="field-actions"><button id="discord-save">Lưu</button></div>
+          <div id="discord-status" class="field-status">Đang tải…</div>
+          <div class="field-note">🔒 Bot Token không sửa được ở đây - mở trực tiếp <code>cai-dat.json</code>, mục <code>discord.botToken</code>, để dán/đổi token (không hiển thị/lưu qua giao diện vì đây là chuỗi nhạy cảm nhất).</div>
+        </section>
+      </aside>
+    </div>
+  </div>
+  <script>
+    const logs = document.getElementById('logs');
+    const meta = document.getElementById('meta');
+    const coordinateToggle = document.getElementById('coordinate-toggle');
+    const trackingStatus = document.getElementById('tracking-status');
+    const geminiKeyInput = document.getElementById('gemini-key-input');
+    const geminiKeyStatus = document.getElementById('gemini-key-status');
+    const discordGuildInput = document.getElementById('discord-guild-input');
+    const discordUserInput = document.getElementById('discord-user-input');
+    const discordStatus = document.getElementById('discord-status');
+    const storageTotal = document.getElementById('storage-total');
+    const storageUpdated = document.getElementById('storage-updated');
+    const storageError = document.getElementById('storage-error');
+    const storageLegend = document.getElementById('storage-legend');
+    let items = [];
+    const MAX = 700;
+    let storageScanTimer = 0;
+    let storageScanBusy = false;
+
+    function escText(v) { return String(v ?? ''); }
+    function stamp(t) {
+      return new Date(Number(t) || Date.now()).toLocaleTimeString('vi-VN', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    }
+    function formatBytes(bytes) {
+      const n = Number(bytes) || 0;
+      if (n < 1024) return `${n} B`;
+      const units = ['KB','MB','GB','TB'];
+      let v = n / 1024, i = 0;
+      while (v >= 1024 && i < units.length - 1) { v /= 1024; i++; }
+      return `${v.toFixed(v >= 100 ? 0 : v >= 10 ? 1 : 2)} ${units[i]}`;
+    }
+    function kindOf(item) {
+      const s = String(item?.text || '');
+      if (/^\[SEARCH\]|DuckDuckGo|Tavily|search provider/i.test(s)) return 'search';
+      if (/^\[CHAT\]|gemini-.*•|model ping/i.test(s)) return 'chat';
+      if (/^\[TTS/i.test(s)) return 'tts';
+      if (/^\[SCREEN\]|^\[WATCH\]|watchTick|screen:/i.test(s)) return /WATCH|watchTick/i.test(s) ? 'watch' : 'screen';
+      if (/^TOUCH\s*•/i.test(s) && /tọa độ/i.test(s)) return 'touch-debug';
+      if (/^TOUCH\s*•/i.test(s) || item?.level === 'touch') return 'touch';
+      if (/error|lỗi|HTTP\s*[45]\d\d|NETWORK|exception|rejection/i.test(s) || item?.level === 'error') return 'error';
+      if (item?.level === 'warn') return 'warn';
+      return '';
+    }
+    function levelText(item) {
+      const s = String(item?.text || '');
+      const m = s.match(/^\[([^\]]+)\]/);
+      if (m) return m[1].toUpperCase();
+      if (item?.level === 'error') return 'ERROR';
+      if (item?.level === 'warn') return 'WARN';
+      if (item?.level === 'info') return 'INFO';
+      if (item?.level === 'debug') return 'DEBUG';
+      if (item?.level === 'renderer') return 'RENDER';
+      if (item?.level === 'touch') return 'TOUCH';
+      return 'LOG';
+    }
+    function render() {
+      const frag = document.createDocumentFragment();
+      if (!items.length) {
+        const e = document.createElement('div'); e.id = 'empty'; e.textContent = 'Chưa có log.'; frag.appendChild(e);
+      } else {
+        for (const item of items) {
+          const row = document.createElement('div'); row.className = 'line ' + kindOf(item);
+          const t = document.createElement('span'); t.className = 'time'; t.textContent = stamp(item.t);
+          const l = document.createElement('span'); l.className = 'level'; l.textContent = levelText(item);
+          const x = document.createElement('span'); x.className = 'text'; x.textContent = escText(item.text);
+          row.append(t,l,x); frag.appendChild(row);
+        }
+      }
+      logs.replaceChildren(frag);
+      logs.scrollTop = logs.scrollHeight;
+      meta.textContent = `${items.length} log • Log kỹ thuật không đi vào lịch sử hội thoại`;
+    }
+    function add(item) {
+      if (!item) return;
+      items.push(item);
+      if (items.length > MAX) items.splice(0, items.length - MAX);
+      render();
+    }
+
+    function updateTrackingStatus(enabled) {
+      coordinateToggle.checked = !!enabled;
+      trackingStatus.textContent = enabled ? '● Đang bật • log tọa độ khi rê chuột' : '○ Đang tắt • Hiyori vẫn tương tác bình thường';
+      trackingStatus.className = enabled ? 'on' : 'off';
+    }
+
+    function setDiscordStatus(d) {
+      d = d || {};
+      const parts = [
+        d.hasToken ? '🔑 botToken: đã điền (trong file)' : '⚠️ botToken: CHƯA điền trong cai-dat.json',
+        (d.guildId && d.userId) ? 'guildId/userId: đã có' : 'guildId/userId: còn thiếu',
+      ];
+      discordStatus.textContent = parts.join(' • ');
+      discordStatus.className = 'field-status ' + (d.hasToken && d.guildId && d.userId ? 'on' : 'off');
+    }
+
+    async function loadTrackingSetting() {
+      try {
+        const r = await window.api.getDevConsoleSettings();
+        updateTrackingStatus(!!r.coordinateTracking);
+        const hasKey = !!(r.gemini && r.gemini.hasKey);
+        geminiKeyStatus.textContent = hasKey ? '● Đã cấu hình key' : '○ Chưa có key';
+        geminiKeyStatus.className = 'field-status ' + (hasKey ? 'on' : 'off');
+        const d = r.discord || {};
+        discordGuildInput.value = d.guildId || '';
+        discordUserInput.value = d.userId || '';
+        setDiscordStatus(d);
+      } catch {
+        updateTrackingStatus(true);
+      }
+    }
+
+    coordinateToggle.addEventListener('change', async () => {
+      coordinateToggle.disabled = true;
+      try {
+        const r = await window.api.setCoordinateDebug(coordinateToggle.checked);
+        updateTrackingStatus(!!r.coordinateTracking);
+      } catch {
+        coordinateToggle.checked = !coordinateToggle.checked;
+      } finally {
+        coordinateToggle.disabled = false;
+      }
+    });
+
+    document.getElementById('gemini-key-save').addEventListener('click', async () => {
+      const v = geminiKeyInput.value.trim();
+      if (!v) { geminiKeyStatus.textContent = 'Dán key vào ô trước đã nhé.'; geminiKeyStatus.className = 'field-status off'; return; }
+      geminiKeyStatus.textContent = 'Đang kiểm tra key…'; geminiKeyStatus.className = 'field-status';
+      try {
+        const r = await window.api.saveKey(v);
+        if (r && r.ok) {
+          geminiKeyInput.value = '';
+          geminiKeyStatus.textContent = '● Key mới đã được kiểm tra và lưu an toàn';
+          geminiKeyStatus.className = 'field-status on';
+        } else {
+          geminiKeyStatus.textContent = '⚠️ ' + (r && r.error ? r.error : 'Không lưu được key.');
+          geminiKeyStatus.className = 'field-status off';
+        }
+      } catch (e) {
+        geminiKeyStatus.textContent = '⚠️ Lỗi: ' + (e && e.message);
+        geminiKeyStatus.className = 'field-status off';
+      }
+    });
+
+    document.getElementById('gemini-key-delete').addEventListener('click', async () => {
+      try {
+        const r = await window.api.deleteKey();
+        geminiKeyStatus.textContent = r && r.ok ? '○ Đã xoá key' : '⚠️ ' + (r && r.error ? r.error : 'Không xoá được key.');
+        geminiKeyStatus.className = 'field-status ' + (r && r.ok ? 'off' : 'off');
+      } catch (e) {
+        geminiKeyStatus.textContent = '⚠️ Lỗi: ' + (e && e.message);
+        geminiKeyStatus.className = 'field-status off';
+      }
+    });
+
+    document.getElementById('discord-save').addEventListener('click', async () => {
+      discordStatus.textContent = 'Đang lưu…'; discordStatus.className = 'field-status';
+      try {
+        const r = await window.api.saveDiscordConfig({ guildId: discordGuildInput.value, userId: discordUserInput.value });
+        if (r && r.ok) {
+          const cur = await window.api.getDevConsoleSettings();
+          setDiscordStatus(cur.discord);
+        } else {
+          discordStatus.textContent = '⚠️ ' + (r && r.error ? r.error : 'Không lưu được.');
+          discordStatus.className = 'field-status off';
+        }
+      } catch (e) {
+        discordStatus.textContent = '⚠️ Lỗi: ' + (e && e.message);
+        discordStatus.className = 'field-status off';
+      }
+    });
+
+    function renderStorage(data) {
+      if (!data || !data.ok) {
+        storageTotal.textContent = 'Không đọc được';
+        storageError.hidden = false;
+        storageError.textContent = data?.error || 'Không thể quét dung lượng chương trình.';
+        return;
+      }
+      storageError.hidden = true;
+      storageTotal.textContent = formatBytes(data.total);
+      const total = Math.max(1, Number(data.total) || 0);
+      const segMap = { models: document.getElementById('seg-models'), runtime: document.getElementById('seg-runtime'), other: document.getElementById('seg-other') };
+      storageLegend.replaceChildren();
+      for (const cat of (data.categories || [])) {
+        const pct = Math.max(0, Math.min(100, (Number(cat.bytes) || 0) / total * 100));
+        if (segMap[cat.id]) segMap[cat.id].style.width = pct + '%';
+        const row = document.createElement('div'); row.className = 'storage-row';
+        const dot = document.createElement('span'); dot.className = 'dot ' + cat.id;
+        const name = document.createElement('span'); name.className = 'storage-name'; name.textContent = cat.label;
+        const size = document.createElement('span'); size.className = 'storage-size'; size.textContent = formatBytes(cat.bytes);
+        row.append(dot, name, size); storageLegend.appendChild(row);
+      }
+      const d = new Date(Number(data.updatedAt) || Date.now());
+      storageUpdated.textContent = 'Cập nhật ' + d.toLocaleTimeString('vi-VN', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    }
+
+    async function refreshStorage() {
+      if (storageScanBusy) return;
+      storageScanBusy = true;
+      try { renderStorage(await window.api.getProgramStorage()); }
+      catch (e) { renderStorage({ ok:false, error:String(e?.message || e) }); }
+      finally { storageScanBusy = false; }
+    }
+
+    window.api.onDevLogBatch(batch => { items = Array.isArray(batch) ? batch.slice(-MAX) : []; render(); });
+    window.api.onDevLog(item => add(item));
+    window.api.onDevLogClear(() => { items = []; render(); });
+    window.api.onCoordinateDebugSetting(updateTrackingStatus);
+    document.getElementById('clear').addEventListener('click', () => window.api.clearDevConsole());
+    document.getElementById('copy').addEventListener('click', async () => {
+      const text = items.map(x => `${stamp(x.t)} [${levelText(x)}] ${x.text}`).join('\n');
+      try {
+        await navigator.clipboard.writeText(text);
+        meta.textContent = `${items.length} log • Đã copy log vào clipboard`;
+        setTimeout(() => { meta.textContent = `${items.length} log • Log kỹ thuật không đi vào lịch sử hội thoại`; }, 1500);
+      } catch {}
+    });
+    render();
+    loadTrackingSetting();
+    refreshStorage();
+    storageScanTimer = setInterval(refreshStorage, 300000);
+    window.addEventListener('beforeunload', () => clearInterval(storageScanTimer));
+  </script>
+</body>
+</html>

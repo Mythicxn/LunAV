@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    html, body {
+      margin: 0; background: transparent; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif;
+      --clr-ok: #3ddc84;   /* xanh lá dùng chung: trạng thái thành công / đang active */
+      --clr-err: #ff5c5c;  /* đỏ dùng chung: trạng thái lỗi / chưa cấu hình */
+    }
+    [hidden] { display: none !important; }
+    canvas { display: block; }
+
+    /* Thanh trên cùng: rê chuột vào mới hiện. Kéo thanh này để di chuyển cửa sổ */
+    #drag {
+      position: fixed; top: 0; left: 0; right: 0; height: 28px;
+      -webkit-app-region: drag;
+      background: rgba(0,0,0,0.4);
+      opacity: 0; transition: opacity .2s;
+      display: flex; justify-content: flex-end; align-items: center;
+      z-index: 10;
+    }
+    body:hover #drag { opacity: 1; }
+    #drag button {
+      -webkit-app-region: no-drag;
+      border: none; background: transparent; color: #fff;
+      font-size: 15px; width: 34px; height: 28px; cursor: pointer;
+    }
+    #drag button:hover { background: rgba(255,255,255,0.2); }
+    #drag #close:hover { background: rgba(220,50,50,0.9); }
+    #drag #btn-devconsole:hover { background: rgba(130,210,180,0.22); }
+    #log .m.ai { background: rgba(108,64,93,0.16); }
+
+    /* Ô nhập tin nhắn */
+    #inputbar {
+      position: fixed; left: 8px; right: 8px; bottom: 8px; height: 42px;
+      display: flex; align-items: center;
+      background: rgba(255,255,255,0.95); border-radius: 22px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+      padding: 0 6px 0 14px; z-index: 6;
+    }
+    #msg { flex: 1; border: none; outline: none; background: transparent; font-size: 14px; color: #222; }
+    #send {
+      width: 32px; height: 32px; border: none; border-radius: 50%;
+      background: #ff7aa8; color: #fff; font-size: 15px; cursor: pointer;
+    }
+    #send:disabled { background: #ccc; cursor: default; }
+    #seescreen {
+      width: 32px; height: 32px; border: none; border-radius: 50%; margin-right: 4px;
+      background: #6c8ebf; color: #fff; font-size: 15px; cursor: pointer;
+    }
+    #seescreen:disabled { background: #ccc; cursor: default; }
+    #seescreen.watching { background: #e0575a; animation: watchpulse 1.4s infinite; }
+    @keyframes watchpulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(224,87,90,0.55); }
+      50% { box-shadow: 0 0 0 7px rgba(224,87,90,0); }
+    }
+
+    /* Bong bóng lời thoại */
+    #bubble {
+      position: fixed; left: 10px; right: 10px; bottom: 58px; max-height: 200px; overflow-y: auto;
+      background: rgba(255,255,255,0.96); color: #222; border-radius: 16px;
+      padding: 10px 14px; font-size: 14px; line-height: 1.45; white-space: pre-wrap;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3); z-index: 5; cursor: pointer;
+    }
+    #bubble.err { background: #fff0f0; border: 1px solid #e57373; color: #a00; }
+    #bubble.wait { color: #888; font-style: italic; }
+
+    /* Bảng lịch sử và cài đặt */
+    .panel {
+      position: fixed; left: 8px; right: 8px; top: 32px; bottom: 58px;
+      background: rgba(25,25,35,0.94); color: #eee; border-radius: 14px;
+      padding: 10px; overflow-y: auto; z-index: 5; font-size: 13px;
+      box-sizing: border-box;
+    }
+
+    /* Console debug: ưu tiên đọc nhanh, nhưng vẫn giữ dữ liệu kỹ thuật cần để bắt lỗi. */
+    #log {
+      padding: 0; overflow: hidden;
+      background: rgba(11,12,17,0.93);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+      display: flex; flex-direction: column;
+    }
+    #log .console-head {
+      flex: 0 0 auto; height: 38px; padding: 0 10px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255,255,255,0.055); border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    #log .console-title { font-weight: 700; letter-spacing: .2px; }
+    #log .console-badge {
+      display: inline-block; margin-left: 7px; padding: 2px 6px;
+      border-radius: 6px; background: rgba(120,180,255,0.13); color: #9ac7ff;
+      font-size: 10px; font-weight: 700; letter-spacing: .6px;
+    }
+    #log-close {
+      width: 28px; height: 26px; border: none; border-radius: 7px;
+      background: transparent; color: #aaa; cursor: pointer; font-size: 16px; line-height: 1;
+    }
+    #log-close:hover { background: rgba(255,255,255,0.10); color: #fff; }
+    #log .console-status {
+      flex: 0 0 auto; padding: 5px 10px; color: #7e8799; font-size: 10.5px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    #loglist { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 8px; }
+    #log .m {
+      margin: 0 0 7px; padding: 8px 10px; border-radius: 9px; max-width: none;
+      white-space: pre-wrap; line-height: 1.42; border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.035); box-sizing: border-box;
+    }
+    #log .m .log-head {
+      display: flex; align-items: baseline; gap: 7px; margin-bottom: 3px;
+      font-size: 10.5px; letter-spacing: .45px; text-transform: uppercase;
+    }
+    #log .m .log-time { margin-left: auto; color: #687083; font-size: 9.5px; letter-spacing: 0; }
+    #log .m .log-body { white-space: pre-wrap; overflow-wrap: anywhere; }
+    #log .m .log-detail {
+      margin-top: 5px; padding-top: 5px; border-top: 1px dashed rgba(255,255,255,0.08);
+      color: #9da5b3; font-size: 10.5px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere;
+    }
+    #log .m.me { border-left: 3px solid #5e8cf1; background: rgba(62,104,190,0.16); }
+    #log .m.ai { border-left: 3px solid #ff7aa8; background: rgba(108,64,93,0.15); }
+    #log .m.log-system { border-left: 3px solid #8c96a8; }
+    #log .m.log-search { border-left: 3px solid var(--clr-ok); background: rgba(42,104,92,0.12); }
+    #log .m.log-error { border-left: 3px solid var(--clr-err); background: rgba(136,39,39,0.18); }
+    #log .m.log-system .log-label { color: #aeb6c5; }
+    #log .m.log-search .log-label { color: var(--clr-ok); }
+    #log .m.log-error .log-label { color: var(--clr-err); }
+    #log .m.me .log-label { color: #8fb2ff; }
+    #log .m.ai .log-label { color: #ff9fc1; }
+
+    #settings {
+      background:
+        radial-gradient(circle at 12% 6%, rgba(255,122,168,0.08), transparent 30%),
+        radial-gradient(circle at 88% 96%, rgba(145,120,255,0.07), transparent 32%),
+        rgba(25,25,35,0.96);
+      border: none;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+      position: fixed;
+    }
+    #settings .settings-title {
+      display: flex; align-items: center; gap: 10px;
+      margin: 0 2px 12px; padding: 0 0 9px;
+      font-size: 15px; font-weight: 700; letter-spacing: .2px;
+    }
+    #settings .settings-title-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, rgba(255,122,168,.42), rgba(255,255,255,.03));
+    }
+    #settings .settings-section-label {
+      margin: 11px 2px 6px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: #ffb8cf;
+    }
+    #settings h3 { margin: 0 0 10px; }
+    #settings label { display: block; margin: 8px 0 4px; }
+    #settings input, #settings select {
+      width: 100%; box-sizing: border-box; padding: 8px; border-radius: 8px;
+      border: 1px solid #666; background: #222; color: #fff; font-size: 13px;
+    }
+    #modelstatus { margin-top: 6px; min-height: 17px; color: #aaa; font-size: 11px; line-height: 1.35; }
+    #modelstatus.ok { color: var(--clr-ok); }
+    #modelstatus.err { color: var(--clr-err); }
+    #settings input[type=range] { padding: 0; }
+    #settings input[type=checkbox],
+    #settings input[type=radio] {
+      width: auto; padding: 0; margin: 0; accent-color: #ff7aa8; flex: 0 0 auto;
+    }
+    #settings .check-row {
+      display: flex; align-items: center; gap: 7px; margin: 0; cursor: pointer; color: #eee;
+    }
+    #settings .check-row span { flex: 1; white-space: nowrap; color: #eee; overflow: visible; }
+    #resize-mode {
+      display: flex; align-items: center; gap: 14px;
+      margin: 0 0 8px;
+      padding: 0 2px;
+    }
+    #resize-mode .check-row {
+      flex: 1 1 0;
+      min-width: 0;
+      color: #eee;
+    }
+    #resize-mode .check-row span {
+      overflow: visible; text-overflow: clip; color: #eee;
+    }
+    #resize-controls {
+      margin-top: 7px; padding: 8px 10px; border-radius: 10px;
+      background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.07);
+    }
+    #resize-controls.disabled { opacity: .45; }
+    #resize-controls .range-value { float: right; color: #ffb9cf; font-variant-numeric: tabular-nums; }
+    #resize-controls small { display: block; margin-top: 6px; line-height: 1.4; }
+    #settings button {
+      margin-top: 8px; padding: 8px 12px; border: none; border-radius: 8px;
+      background: #ff7aa8; color: #fff; cursor: pointer; font-size: 13px;
+    }
+    #settings button.gray { background: #555; }
+    #settings button.danger { background: #b33; }
+    #settings button:disabled { background: #777; }
+    #settings select {
+      width: 100%; box-sizing: border-box; padding: 8px; border-radius: 8px;
+      border: 1px solid #666; background: #222; color: #fff; font-size: 13px;
+    }
+    #voicestatus { margin-top: 8px; min-height: 18px; color: var(--clr-ok); }
+    #voicestatus.err { color: var(--clr-err); }
+    #btn-search.off { opacity: 0.45; }
+    /* Chấm báo mất mạng (chỉ hiện khi mất mạng) */
+    #netstatus {
+      position: fixed; top: 6px; left: 8px; z-index: 11; pointer-events: none;
+      background: rgba(200,50,50,0.92); color: #fff; font-size: 11px; padding: 3px 9px; border-radius: 10px;
+    }
+    /* Thông báo nhỏ tự tắt */
+    #toast {
+      position: fixed; top: 40px; left: 10px; right: 10px; z-index: 20; text-align: center; pointer-events: none;
+      background: rgba(20,18,28,0.92); color: #fff; font-size: 12px; padding: 8px 10px; border-radius: 10px; line-height: 1.4;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    }
+    /* Cảnh báo voice Discord (không vào được / mất kết nối) - nằm lại đến khi bấm đóng hoặc tự tắt sau ~45 giây */
+    #voicealert {
+      position: fixed; top: 34px; left: 8px; right: 8px; z-index: 12;
+      background: #b3261e; color: #fff; font-size: 12.5px; line-height: 1.45;
+      padding: 10px 12px; border-radius: 12px; box-shadow: 0 3px 14px rgba(0,0,0,0.45);
+    }
+    #voicealerttext { white-space: pre-wrap; display: block; }
+    #voicealert .row { margin-top: 8px; display: flex; gap: 8px; justify-content: flex-end; }
+    #voicealert button {
+      border: none; border-radius: 8px; padding: 5px 12px; font-size: 12px; cursor: pointer;
+      background: rgba(255,255,255,0.92); color: #7a1a14;
+    }
+    #voicealert button.ghost { background: rgba(255,255,255,0.2); color: #fff; }
+    #viewgrid button { margin: 3px 4px 0 0; padding: 5px 9px; font-size: 12px; }
+    #settings hr { border: none; border-top: 1px solid #444; margin: 14px 0; }
+    #settings small { color: #aaa; }
+  </style>
+</head>
+<body>
+  <div id="drag">
+    <button id="btn-search" title="Tìm kiếm web">🌐</button>
+    <button id="btn-zoom" title="Phóng to / thu nhỏ nhân vật (cuộn chuột trên nhân vật cũng được)">🔍</button>
+    <button id="btn-mute" title="Bật/tắt tiếng">🔊</button>
+    <button id="btn-log" title="Lịch sử trò chuyện">💬</button>
+    <button id="btn-devconsole" title="Developer Console">🛠</button>
+    <button id="btn-settings" title="Cài đặt">⚙</button>
+    <button id="close" title="Tắt">✕</button>
+  </div>
+
+  <canvas id="canvas"></canvas>
+
+  <div id="netstatus" hidden>● Mất kết nối mạng</div>
+  <div id="toast" hidden></div>
+
+  <div id="voicealert" hidden>
+    <span id="voicealerttext"></span>
+    <div class="row">
+      <button id="voicealertretry">Thử lại</button>
+      <button id="voicealertclose" class="ghost">Đóng</button>
+    </div>
+  </div>
+
+  <div id="bubble" hidden></div>
+
+  <div id="log" class="panel" hidden>
+    <div class="console-head">
+      <div class="console-title">Lịch sử trò chuyện <span class="console-badge">CHAT</span></div>
+      <button id="log-close" title="Đóng console">×</button>
+    </div>
+    <div id="log-status" class="console-status">Các tin nhắn Hiyori ghi nhớ trong lịch sử.</div>
+    <div id="loglist"></div>
+  </div>
+
+  <div id="settings" class="panel" hidden>
+    <div class="settings-title"><span>⚙ Cài đặt</span><span class="settings-title-line"></span></div>
+    <div class="settings-section-label">Model Live2D</div>
+    <select id="model-select"></select>
+    <div id="modelstatus">Đổi model trực tiếp, không cần sửa đường dẫn trong code.</div>
+    <hr>
+    <div class="settings-section-label">Giọng nói</div>
+    <select id="voice"></select>
+    <label for="voicepitch">Độ cao giọng: <span id="voicepitchval">+0Hz</span></label>
+    <input id="voicepitch" type="range" min="-50" max="150" step="5" value="0">
+    <button id="voiceanime" class="gray">✨ Kiểu anime</button>
+    <button id="voicetest">▶ Nghe thử</button>
+    <button id="voicesave">Dùng giọng này</button>
+    <div id="voicestatus"></div>
+    <hr>
+    <div class="settings-section-label">Kích thước nhân vật</div>
+    <div id="viewgrid">
+      <button id="view-full" class="gray">Toàn thân</button>
+      <button id="view-bust" class="gray">Nửa người</button>
+      <button id="view-close" class="gray">Cận mặt</button>
+    </div>
+    <label for="zoomrange">Phóng to</label>
+    <input id="zoomrange" type="range" min="0" max="100" step="1" value="0">
+    <label for="panrange">Khung nhìn: đầu ↔ chân</label>
+    <input id="panrange" type="range" min="0" max="100" step="1" value="0">
+    <hr>
+    <div class="settings-section-label">Cửa sổ</div>
+    <div id="resize-mode">
+      <label class="check-row" for="resize-fixed" title="Giữ nguyên kích thước cửa sổ">
+        <input id="resize-fixed" name="window-size-mode" type="radio" value="fixed" checked>
+        <span>Giữ nguyên</span>
+      </label>
+      <label class="check-row" for="resize-enable" title="Cho phép thay đổi kích thước cửa sổ">
+        <input id="resize-enable" name="window-size-mode" type="radio" value="resizable">
+        <span>Thay đổi kích thước</span>
+      </label>
+    </div>
+    <div id="resize-controls">
+      <label for="resize-width">Chiều rộng <span id="resize-width-val" class="range-value">360 px</span></label>
+      <input id="resize-width" type="range" min="260" max="1000" step="10" value="360">
+      <label for="resize-height">Chiều cao <span id="resize-height-val" class="range-value">620 px</span></label>
+      <input id="resize-height" type="range" min="400" max="1000" step="10" value="620">
+    </div>
+    <hr>
+    <button id="clearall" class="danger">Xoá lịch sử và trí nhớ</button>
+    <br>
+    <button id="closesettings" class="gray">Đóng</button>
+  </div>
+
+  <div id="inputbar">
+    <button id="seescreen" title="Chụp màn hình rồi hỏi - bấm để bật theo dõi nhẹ, bấm lại để tắt">👁</button>
+    <input id="msg" type="text" placeholder="Nhắn gì đó cho mình..." autocomplete="off">
+    <button id="send" title="Gửi">➤</button>
+  </div>
+
+  <script src="live2dcubismcore.min.js"></script>
+  <script src="node_modules/pixi.js/dist/browser/pixi.min.js"></script>
+  <script src="node_modules/pixi-live2d-display/dist/cubism4.min.js"></script>
+  <script src="emotion.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

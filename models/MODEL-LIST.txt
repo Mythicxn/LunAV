@@ -1,0 +1,14 @@
+LIVE2D MODELS
+==============
+
+hiyori   -> Hiyori
+angel    -> Angel
+traveler -> Traveler
+
+To add another model:
+1. Create models/<id>/
+2. Put one *.model3.json and its referenced files there.
+3. Restart the app; the model is discovered automatically.
+
+Mouse tracking uses the original pixi-live2d-display model.focus(x, y)
+behavior. Do not add a second requestAnimationFrame mouse tracker.
