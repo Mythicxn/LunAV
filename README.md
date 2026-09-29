@@ -5,8 +5,9 @@
 LunAV is a desktop AI companion designed to combine an AI assistant with a Live2D VTuber character.
 
 The project supports text chat, voice interaction, Discord integration, TTS, music playback and customizable Live2D models.
+Download Now here : https://mythicxn.github.io/LunAV-webside/
 
-==================================================================================================================================================================
+====================================================================================================================================================
 
 ## ✨ Features
 
@@ -60,5 +61,5 @@ LunAV can connect to Discord and interact with users directly.
 - AI voice responses
 - TTS playback inside Discord
 - Voice reconnection handling
-==================================================================================================================================================================
+====================================================================================================================================================
 
